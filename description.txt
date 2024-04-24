@@ -1,0 +1,236 @@
+    1 create virtual environment  (python -m venv folder_name)
+            : it is used to create project separately all its supporting packages installed
+              individually
+    2 to activate virtual environment (venv\Scripts\activate)
+    3 install django by using (pip install django)
+    5 create project in django
+            (django-admin startproject django_project)
+            we get a folder named django_project
+    6 create app in django
+            first change directory ( cd django_project)
+            then run command( python manage.py startapp home)
+
+            we get a folder named home inside django_project file
+    7 to set up development server to view our project (python manage.py runserver)
+    8 to add app to project path
+            go to project folder --> settings.py --> goto installed app section -->
+
+                    INSTALLED_APPS = [
+            'django.contrib.admin',
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.sessions',
+            'django.contrib.messages',
+            'django.contrib.staticfiles',
+            'home',     --> Add app name
+        ]
+
+    9 MVT  (model View Template):
+            model means database table
+            view means type of request
+            template means a html page that used to display the content
+
+    10 create a folder named templates to store html templates in the main directory
+       add templates --> inside settings.py -->>TEMPLATES section -->DIRS ['templates']
+       create html files and save inside templates file
+
+    11 now link these files inside views section like -->
+            def index(request):
+                    return render(request, 'index.html')
+            here we can render html files using // render(request , page name)
+    12 now create a superuser
+        --> we have an admin section to administrate the website or control backend
+        --> here we can add users or remove users
+
+        --> by running python manage.py createsuperuser
+              while running this command we get an error
+               " You have 18 unapplied migration(s). Your project may not work properly until
+               you apply the migrations for app(s): admin, auth, contenttypes, sessions "
+
+        -->   to solve this error we need to run this command
+                    python manage.py makemigrations
+                        we get No changes detected message
+        -->   now run next command
+                    python manage.py migrate
+        --> now create super user to login to admin panel by previous command
+        --> here we can add username , email id, and password to set super user
+                (admin  rizwantechy003@gmail.com  admin@123)
+
+    13  from there we can add users
+        --> here user status in important   Active --> refer to active user or not
+                                            staff --> whether the user can loginto this site
+                                            super --> got all permission that a superuser has
+    14 Static Files :: static files are fixed files that are served to web application
+                --> css file , image file , js files
+        --> first create a folder named static inside project folder
+        --> now create sub folders named css , js , images
+        --> now add static folder to the static files inside settings.py
+                    --> goto static URL section
+                    --> now add this code after URL
+                        STATICFILES_DIRS = [
+                            os.path.join(BASE_DIR, 'static')
+                        ]
+        --> now create a css file and add it to base.html to style the web element
+            to add static file inside base.html
+              {% load static %}
+        --> now link css file
+                <link rel="stylesheet" href = {% static '/css/style.css' %} >
+        --> like this we can add image files and js files
+
+    15 Django models :: models means table in django
+                here three tables are needed
+                departments (dep_name , dep_description)
+                doctors(doc_name, doc_spec, dep_name, doc_image)
+                bookings(p_name, p_phone, p_email, dep_name, booking_date)
+
+        --> to create department model --> goto models.py --> create a class named department
+
+                    class departments(models.Model):
+                            dep_name = models.charfield(maxlength= 100)
+                            dep_description = models.TextField()
+
+        --> now migrate like previous
+
+        --> register models inside admin.py
+            from.models import departments
+
+            admin.site.register(departments)
+
+            by using above command register department to admin panel
+
+        --> now add departments one by one
+    16 now create a list to access the objects from database inside views.py
+                department section
+                dept = Departments.objects.all()
+                return render(request, 'department.html', {'dept' : dept})
+                    here the list of query set passed as dictionary
+    17  and now goto department page content block
+        add these codes
+                     <h1 class="text-center fw-bold  ">Our Departments</h1>
+                  <hr>
+
+                    {%for d in dipt %}
+                    <div class="mx-auto my-3 w-50 text-bg-dark p-3 text-center border
+                    border-danger rounded bg-dark text-white">
+                         <h1>{{d.dep_name}}</h1>
+                         <p>{{d.dep_description}}</p>
+                    </div>
+                    {% endfor %}
+
+    18 next we need to create Doctors' Table inside models.py
+
+            class Doctors(models.Model):
+                doc_name = models.CharField(max_length=100)
+                doc_spec = models.CharField(max_length=100)
+                dep_name = models.ForeignKey(Departments, on_delete=models.CASCADE)
+                doc_image = models.ImageField(upload_to='doctors')
+
+              ' on_delete=models.CASCADE '
+                     means what should happen to the record inside
+                this field when we delete this record from here the record will be deleted
+                from two places
+
+                doc_image = models.ImageField(upload_to='doctors')
+                     here the 'upload_to='doctors'  means the images will be
+                     uploaded to doctors page
+        --> we need to install pillow library to done image operations
+           run      python -m pip install pillow
+
+        --> now goto settings folder
+                we need to configure some settings then only our images will
+                be served inside the web page
+
+                 MEDIA_ROOT = BASE_DIR/'uploads'   this means the images will be added to doctors folder inside uploads inside
+                                                    base_dir(main project folder where the manage.py present)
+
+                 MEDIA_URL = '/media'    this is to serve the images to the page
+
+        --> now go to urls.py
+                goto
+                urlpatterns = [
+                    path('admin/', admin.site.urls),
+                    path('', include('home.urls')),  # mapping to home url
+                ]  + static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
+
+                        then only picture will be served on website
+        --> now register doctors table inside admin.py
+                   from.models import departments,Doctors
+
+                   admin.site.register(Doctors)
+    19 now we need to display department name on the select box value inside admin page
+            --> go to models.py --> add a new function inside Department class
+                     def __str__(self):
+                        return self.dep_name
+
+    20  now similarly create booking model
+            -->  class Booking(models.Model):
+                    p_name = models.CharField(max_length=200)
+                    p_phone = models.CharField(max_length=10)
+                    p_email = models.EmailField()
+                    doc_name = models.ForeignKey(Doctors, on_delete=models.CASCADE)
+                    booking_date = models.DateField()
+                    Booked_on = models.DateField(auto_now=True)
+
+                    def __str__(self):
+                        return self.p_name
+
+                    this table is used to accept user values from
+
+    21 now create form for booking page
+                --> first create form.py file inside app
+                --> from django import forms  (by using this library we can create form from model)
+                --> now import Booking model to forms.py
+                        from .models import Booking
+
+                        class BookingForm(forms.ModelForm):
+                            class Meta:
+                                model = Booking
+                                fields = '__all__'
+                --> now goto views.py    now update booking class to the given code below
+                       def booking(request):
+                            form = BookingForm()      // to create a form based on Booking table form variable contain form web elements
+                            print(form)               // to print the code of the form
+                            if request.method == 'POST':        // request.POST method will work only when the user submits the form
+                                data = BookingForm(request.POST)  // to access the data entered by the user from the form and stored inside data
+                                print(data)                        // to print the data
+                                if data.is_valid():                // to check the data is valid or not with the fields data type
+                                    data.save()                     // to save the data to the model
+                                    return redirect('/')            // after the clicking submit the page will redirect to home
+
+                            return render(request, 'booking.html', {'form': form})
+
+
+                --> now goto booking.html
+                        {% block content %}
+                                  <h1>This is Booking Page</h1>
+                                <form method="post">
+                                    {{form.as_p}}        // to insert form elements from bookingform
+
+
+                                    {% csrf_token %}      // to send data securely
+                                    <button type="submit" >BOOK NOW</button>
+                                </form>
+                        {% endblock %}
+                --> now goto forms.py customize form element using
+
+                        widgets = {
+            'booking_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control bg-light'}),   # when we give type:date date picker will be displayed on the date field
+            'p_name': forms.TextInput(attrs={'class': 'form-control bg-light'}),  here class means bootstrap class
+            'p_phone': forms.TextInput(attrs={'class': 'form-control bg-light'}),
+            'p_email':forms.EmailInput(attrs={'class': 'form-control bg-light'}),
+            'doc_name': forms.Select(attrs={'class': 'form-control bg-light'})
+
+        }
+                    here we use dictionary to customize the form element
+
+        --> now we need to disply the full details of the patient in the admin page
+                    goto admin.py
+                    create a class named BookingAdmin
+
+                    class BookingAdmin(admin.ModelAdmin):
+                        list_display = ('id','p_name', 'p_phone', 'p_email','doc_name','booking_date','booked_on' )
+
+                    now pass the value
+                        as      admin.site.register(Booking, BookingAdmin)
+
+    22 now create contact form like previous way as booking

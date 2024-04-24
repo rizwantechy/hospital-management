@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+   Contact us
+{% endblock %}
+
+
+
+{% block content    %}
+  <h1 class="text-center fw-bold my-4" style="color:#4682A9">Contact Now</h1>
+<hr>
+<div class="container  w-50 my-5" style="background-color:#CEE6F3;  padding-top:30px;
+   padding-bottom:30px; padding-left:40px; padding-right:40px; border: 1px solid #4682A9; border-radius:10px;
+margin-bottom:60px">
+        <form method="post" style="margin-bottom : px" >
+            <label for="" class="fw-bold" style="color:#12486B;">Name</label>
+            {{form.c_name}}
+ .
+             <label for="" class="fw-bold" style="color:#12486B;">Phone Number</label>
+            {{form.c_phone}}
+
+             <label for="" class="fw-bold" style="color:#12486B;">Email</label>
+            {{form.c_email}}
+
+             <label for="" class="fw-bold" style="color:#12486B;">Address</label>
+            {{form.c_address}}
+
+
+
+             <label for="" class="fw-bold" style="color:#12486B;">Subject</label>
+            {{form.c_sub}}
+
+
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary text-center" style="margin-top:7px">BOOK NOW</button>
+        </form>
+</div>
+<br>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+   Departments
+{% endblock %}
+
+
+
+{% block content%}
+          <h1 class="text-center fw-bold  ">Our Departments</h1>
+          <hr>
+
+            {%for d in dept%}
+            <div class="mx-auto my-5 w-50  p-3 text-center border
+            border rounded-3 border-secondary border-2 text-white" style="background-color :#CEE6F3" >
+                 <h3 class="text-dark">{{d.dep_name}}</h3>
+                 <p style="color : #4682A9">{{d.dep_description}}</p>
+            </div>
+            {% endfor %}
+{% endblock %}
+
+

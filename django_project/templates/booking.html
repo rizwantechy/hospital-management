@@ -1,0 +1,45 @@
+{% extends 'base.html'%}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Booking
+{% endblock %}
+
+
+
+{% block content %}
+  <h1 class="text-center fw-bold my-2" style="color :#4682A9 ">Make An Appoinment</h1>
+<hr>
+<div class="container  w-50 my-5  " style="background-color:#CEE6F3;  padding-top:30px;
+   padding-bottom:30px; padding-left:40px; padding-right:40px; border: 1px solid #4682A9; border-radius:10px;
+">
+        <form method="post"  >
+            <label for="" class="fw-bold" style="color:#12486B;">Patient Name</label>
+            {{form.p_name}}
+
+             <label for="" class="fw-bold" style="color:#12486B;">Phone Number</label>
+            {{form.p_phone}}
+
+             <label for="" class="fw-bold" style="color:#12486B;">Email</label>
+            {{form.p_email}}
+
+             <label for="" class="fw-bold" style="color:#12486B;">Doctor</label>
+            {{form.doc_name}}
+
+
+
+             <label for="" class="fw-bold" style="color:#12486B;">Booking Date</label>
+            {{form.booking_date}}
+            {{form.c_sub}}
+
+
+            {% csrf_token %}
+            <br>
+            <button type="submit" class="btn btn-primary text-center" style="margin-top:7px">BOOK NOW</button>
+        </form>
+</div>
+<br>
+
+
+
+{% endblock %}
